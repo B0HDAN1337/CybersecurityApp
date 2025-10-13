@@ -12,6 +12,7 @@ using Server.ViewModel;
 namespace Server.Controller
 {
     [ApiController]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     public class AdminController : ControllerBase
     {

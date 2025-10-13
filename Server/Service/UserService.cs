@@ -45,6 +45,8 @@ namespace Server.Service
                 Lastname = viewModel.Lastname,
                 Email = viewModel.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(viewModel.Password, 13),
+                Role = RoleUser.User,
+                Status = StatusUser.Active
             };
 
             return await _repository.CreateAsync(user);
@@ -100,16 +102,16 @@ namespace Server.Service
             var claim = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userLogin.Id.ToString()),
-                new Claim(ClaimTypes.Name, email),
-                new Claim(ClaimTypes.Role, "User")
+                new Claim(ClaimTypes.Name, userLogin.Email),
+                new Claim(ClaimTypes.Role, userLogin.Role)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("keyGenerationTokenForUserIdentification"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_long_and_secure_key_at_least_32_bytes!"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "IntelligentApp",
-                audience: "IntelligentApp",
+                issuer: "App",
+                audience: "App",
                 claims: claim,
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds

@@ -18,7 +18,5 @@ namespace Server.ViewModel
         public string Lastname { get; set; }
         [Required]
         public string Password { get; set; }
-        public string Role { get; set; }
-        public string Status { get; set; }
     }
 }

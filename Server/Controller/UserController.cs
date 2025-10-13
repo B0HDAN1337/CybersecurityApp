@@ -38,6 +38,7 @@ namespace Server.Controller
 
 
         [HttpPut("Update/{id}")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> Update(int id, UserViewModel userViewModel)
         {
             await _service.UpdateUserAsync(id, userViewModel);
@@ -46,6 +47,7 @@ namespace Server.Controller
 
 
         [HttpDelete("Delete/{id}")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteUserAsync(id);

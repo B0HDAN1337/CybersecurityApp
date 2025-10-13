@@ -65,11 +65,11 @@ using (var scope = app.Services.CreateScope())
 // Seed Admin user
 using (var scope = app.Services.CreateScope())
 {
-    var repo = scope.ServiceProvider.GetRequiredService<IUserService>();
+    var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
     var admin = await repo.GetByEmailAsync("admin@system.com");
     if (admin == null)
     {
-        await repo.CreateUserAsync(new UserViewModel
+        await repo.CreateAsync(new User
         {
             Firstname = "System",
             Lastname = "Admin",
