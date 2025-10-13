@@ -12,7 +12,7 @@ namespace Server.Service
         Task<IEnumerable<User>> GetUserAllAsync();
         Task<User> GetUserByIdAsync(int id);
         Task<User> GetByEmailAsync(string email);
-        Task<User> CreateUserAsync(UserViewModel viewModel);
+        Task<User> CreateUserAsync(object model);
         Task<User> UpdateUserAsync(int id, UserViewModel viewModel);
         Task<User> DeleteUserAsync(int id);
         public int GetCurrentUserId();

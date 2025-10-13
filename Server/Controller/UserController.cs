@@ -23,6 +23,7 @@ namespace Server.Controller
 
 
         [HttpPost("Register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] UserViewModel userViewModel)
         {
             try

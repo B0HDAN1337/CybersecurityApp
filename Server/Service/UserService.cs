@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Server.ViewModel;
+using Server.ViewModel.AdminViewModels;
 
 
 namespace Server.Service
@@ -37,19 +38,41 @@ namespace Server.Service
             return await _repository.GetByEmailAsync(email);
         }
 
-        public async Task<User> CreateUserAsync(UserViewModel viewModel)
+        public async Task<User> CreateUserAsync(object model)
         {
-            var user = new User
-            {
-                Firstname = viewModel.Firstname,
-                Lastname = viewModel.Lastname,
-                Email = viewModel.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(viewModel.Password, 13),
-                Role = RoleUser.User,
-                Status = StatusUser.Active
-            };
+            var currentRole = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
 
-            return await _repository.CreateAsync(user);
+            if (model is AdminUserViewModel adminModel && currentRole == RoleUser.Admin)
+            {
+                var adminUser = new User
+                {
+                    Firstname = adminModel.Firstname,
+                    Lastname = adminModel.Lastname,
+                    Email = adminModel.Email,
+                    Password = BCrypt.Net.BCrypt.HashPassword(adminModel.Password, 13),
+                    Role = adminModel.Role,
+                    Status = adminModel.Status
+                };
+
+                return await _repository.CreateAsync(adminUser);
+
+            }
+            if (model is UserViewModel userModel)
+            {
+                var user = new User
+                {
+                    Firstname = userModel.Firstname,
+                    Lastname = userModel.Lastname,
+                    Email = userModel.Email,
+                    Password = BCrypt.Net.BCrypt.HashPassword(userModel.Password, 13),
+                    Role = RoleUser.User,
+                    Status = StatusUser.Active
+                };
+
+                return await _repository.CreateAsync(user);
+            }
+
+            throw new UnauthorizedAccessException("You are not Authorized to create user");
         }
 
         public async Task<User> UpdateUserAsync(int id, UserViewModel viewModel)
@@ -91,8 +114,13 @@ namespace Server.Service
             {
                 return null;
             }
-
-            bool isPasswordHash = BCrypt.Net.BCrypt.Verify(password, userLogin.Password);
+            
+            if(userLogin.Status == "Blocked")
+            {
+                return "Blocked";
+            } else
+            {
+                bool isPasswordHash = BCrypt.Net.BCrypt.Verify(password, userLogin.Password);
 
             if (!isPasswordHash)
             {
@@ -118,6 +146,7 @@ namespace Server.Service
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+            }            
         }
 
         public int GetCurrentUserId()

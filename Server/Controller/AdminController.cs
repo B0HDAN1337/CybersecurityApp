@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Server.Service;
 using Server.ViewModel;
+using Server.ViewModel.AdminViewModels;
 
 namespace Server.Controller
 {
@@ -37,7 +38,7 @@ namespace Server.Controller
         }
 
         [HttpPost("User/Create")]
-        public async Task<IActionResult> Create([FromBody] UserViewModel userViewModel)
+        public async Task<IActionResult> Create([FromBody] AdminUserViewModel userViewModel)
         {
             try
             {
@@ -64,18 +65,6 @@ namespace Server.Controller
         {
             await _service.DeleteUserAsync(id);
             return Ok();
-        }
-        
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginViewModel request)
-        {
-            var token = await _service.LoginUserAsync(request.Email, request.Password);
-            if (token == null)
-            {
-                return Unauthorized();
-            }
-
-            return Ok(new { token });
         }
     }
 }
