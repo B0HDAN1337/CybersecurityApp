@@ -9,6 +9,7 @@ namespace Server.ViewModel.AdminViewModels
     {
         public string Role { get; set; }
         public string Status { get; set; }
-        public bool RequirePassword { get; set; } = false;
+        public bool PasswordPolicy { get; set; } = false;
+        public DateTime? PasswordExpiresAt { get; set; }
     }
 }

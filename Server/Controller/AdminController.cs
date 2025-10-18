@@ -13,7 +13,7 @@ using Server.ViewModel.AdminViewModels;
 namespace Server.Controller
 {
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     public class AdminController : ControllerBase
     {
@@ -53,7 +53,7 @@ namespace Server.Controller
 
 
         [HttpPut("UpdateUser/{id}")]
-        public async Task<IActionResult> Update(int id, UserViewModel userViewModel)
+        public async Task<IActionResult> Update(int id, AdminUserViewModel userViewModel)
         {
             await _service.UpdateUserAsync(id, userViewModel);
             return Ok();

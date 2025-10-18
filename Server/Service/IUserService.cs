@@ -13,7 +13,7 @@ namespace Server.Service
         Task<User> GetUserByIdAsync(int id);
         Task<User> GetByEmailAsync(string email);
         Task<User> CreateUserAsync(object model);
-        Task<User> UpdateUserAsync(int id, UserViewModel viewModel);
+        Task<User> UpdateUserAsync(int id, object model);
         Task<User> DeleteUserAsync(int id);
         public int GetCurrentUserId();
         Task<string> LoginUserAsync(string email, string password);

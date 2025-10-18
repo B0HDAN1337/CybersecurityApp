@@ -57,7 +57,7 @@ namespace Server.Repository
             existUser.Lastname = user.Lastname;
             existUser.Email = user.Email;
             existUser.Password = user.Password;
-            existUser.RequirePassword = user.RequirePassword;
+            existUser.PasswordPolicy = user.PasswordPolicy;
 
             await _context.SaveChangesAsync();
 

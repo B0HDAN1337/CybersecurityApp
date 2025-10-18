@@ -53,7 +53,8 @@ namespace Server.Service
                     Password = BCrypt.Net.BCrypt.HashPassword(adminModel.Password, 13),
                     Role = adminModel.Role,
                     Status = adminModel.Status,
-                    RequirePassword = adminModel.RequirePassword
+                    PasswordPolicy = adminModel.PasswordPolicy,
+                    PasswordExpiresAt = adminModel.PasswordExpiresAt
                 };
 
                 return await _repository.CreateAsync(adminUser);
@@ -77,34 +78,58 @@ namespace Server.Service
             throw new UnauthorizedAccessException("You are not Authorized to create user");
         }
 
-        public async Task<User> UpdateUserAsync(int id, UserViewModel viewModel)
+        public async Task<User> UpdateUserAsync(int id, object model)
         {
             var existUser = await _repository.GetByIdAsync(id);
+
+            var currentRole = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
 
             if (existUser == null)
             {
                 throw new Exception("User not found");
             }
-            existUser.Firstname = viewModel.Firstname;
-            existUser.Lastname = viewModel.Lastname;
-            existUser.Email = viewModel.Email;
 
-
-            if (existUser.RequirePassword)
+            if (model is AdminUserViewModel adminModel && currentRole == RoleUser.Admin)
             {
-                var pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){3,}).+$";
-                if (!Regex.IsMatch(viewModel.Password, pattern))
+                existUser.Firstname = adminModel.Firstname;
+                existUser.Lastname = adminModel.Lastname;
+                existUser.Email = adminModel.Email;
+                existUser.Password = adminModel.Password;
+                existUser.PasswordPolicy = adminModel.PasswordPolicy;
+                existUser.PasswordExpiresAt = adminModel.PasswordExpiresAt;
+
+                if (!string.IsNullOrWhiteSpace(adminModel.Password))
                 {
-                    throw new ArgumentException("The password must contain at least one uppercase letter, one lowercase letter, and three numbers.");
+                    existUser.Password = BCrypt.Net.BCrypt.HashPassword(adminModel.Password, 13);
                 }
+
+                return await _repository.UpdateAsync(id, existUser);
             }
-            
-            if (!string.IsNullOrWhiteSpace(viewModel.Password))
+            else if (currentRole == RoleUser.User && model is UserViewModel userModel)
             {
-                existUser.Password = BCrypt.Net.BCrypt.HashPassword(viewModel.Password, 13);
+                existUser.Firstname = userModel.Firstname;
+                existUser.Lastname = userModel.Lastname;
+                existUser.Email = userModel.Email;
+                existUser.Password = userModel.Password;
+
+                if (existUser.PasswordPolicy)
+                {
+                    var pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){3,}).+$";
+                    if (!Regex.IsMatch(userModel.Password, pattern))
+                    {
+                        throw new ArgumentException("The password must contain at least one uppercase letter, one lowercase letter, and three numbers.");
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(userModel.Password))
+                {
+                    existUser.Password = BCrypt.Net.BCrypt.HashPassword(userModel.Password, 13);
+                }
+
+                return await _repository.UpdateAsync(id, existUser);
             }
 
-            return await _repository.UpdateAsync(id, existUser);
+             throw new UnauthorizedAccessException("You are not Authorized to create user");
         }
 
         public async Task<User> DeleteUserAsync(int id)
