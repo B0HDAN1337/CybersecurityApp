@@ -1,0 +1,41 @@
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #E5EDFE;
+    margin: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+        height: 100px;
+        width: 100%;
+        background-color: #4C7BF3;
+        display: flex;
+        align-items: center;
+        justify-content: right;
+    }
+
+.header-buttons {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 25px;
+    }
+
+    .header-buttons a {
+        text-decoration: none;
+    }
+
+    .header-buttons button {
+        width: 150px;
+        height: 40px;
+        background-color: #FFFFFF;
+        color: #4C7BF3;
+        font-size: 20px;
+        font-weight: 400;
+        border: none;
+    }

@@ -1,0 +1,85 @@
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #E5EDFE;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+section{
+    display: flex;
+    align-items: center;
+    justify-self: center;
+}
+
+.sign-up-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        height: auto;
+        width: 636px;
+        background-color: #FFFFFF;
+
+        margin-top: 40px;
+    }
+
+    .form-heading {
+        height: 80px;
+        width: 100%;
+        font-size: 30px;
+        font-weight: 600;
+        background-color: #4C7BF3;
+        text-align: center;
+        color: #FFFFFF;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .form-structure {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .single-input {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .single-input p {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1A1A1A;
+    }
+
+    .single-input input {
+        width: 393px;
+        height: 50px;
+        background-color: #DFE8FF;
+        border: none;
+        color: #849DDD;
+        text-align: center;
+    }
+
+    .submit {
+        color: #FFFFFF;
+        width: 208px;
+        height: 50px;
+        font-size: 20px;
+        font-weight: 600;
+        text-align: center;
+        background-color: #4C7BF3;
+        border: none;
+
+        margin-top: 10px;
+    }
