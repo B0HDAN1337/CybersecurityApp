@@ -29,5 +29,6 @@ namespace Server.Models
         public string Password { get; set; }
         public string Status { get; set; } = StatusUser.Active;
         public string Role { get; set; } = RoleUser.User;
+        public bool RequirePassword { get; set; } = true;
     }
 }

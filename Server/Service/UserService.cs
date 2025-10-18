@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Server.ViewModel;
 using Server.ViewModel.AdminViewModels;
+using System.Text.RegularExpressions;
 
 
 namespace Server.Service
@@ -51,7 +52,8 @@ namespace Server.Service
                     Email = adminModel.Email,
                     Password = BCrypt.Net.BCrypt.HashPassword(adminModel.Password, 13),
                     Role = adminModel.Role,
-                    Status = adminModel.Status
+                    Status = adminModel.Status,
+                    RequirePassword = adminModel.RequirePassword
                 };
 
                 return await _repository.CreateAsync(adminUser);
@@ -83,9 +85,20 @@ namespace Server.Service
             {
                 throw new Exception("User not found");
             }
-
+            existUser.Firstname = viewModel.Firstname;
+            existUser.Lastname = viewModel.Lastname;
             existUser.Email = viewModel.Email;
 
+
+            if (existUser.RequirePassword)
+            {
+                var pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){3,}).+$";
+                if (!Regex.IsMatch(viewModel.Password, pattern))
+                {
+                    throw new ArgumentException("The password must contain at least one uppercase letter, one lowercase letter, and three numbers.");
+                }
+            }
+            
             if (!string.IsNullOrWhiteSpace(viewModel.Password))
             {
                 existUser.Password = BCrypt.Net.BCrypt.HashPassword(viewModel.Password, 13);

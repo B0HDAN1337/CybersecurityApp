@@ -74,7 +74,7 @@ using (var scope = app.Services.CreateScope())
             Firstname = "System",
             Lastname = "Admin",
             Email = "admin@system.com",
-            Password = "Admin123!",
+            Password = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
             Role = RoleUser.Admin,
             Status = StatusUser.Active
         });

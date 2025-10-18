@@ -53,8 +53,11 @@ namespace Server.Repository
         {
             var existUser = await _context.Users.FindAsync(id);
 
+            existUser.Firstname = user.Firstname;
+            existUser.Lastname = user.Lastname;
             existUser.Email = user.Email;
             existUser.Password = user.Password;
+            existUser.RequirePassword = user.RequirePassword;
 
             await _context.SaveChangesAsync();
 
