@@ -5,17 +5,17 @@
                 <p>SIGN IN</p>
             </div>
 
-            <form action="">
+            <form action="" (ngSubmit)="login()">
                 <div class="form-structure">
                     <div class="single-input">
                         <p>Email</p>
-                        <input type="email" class="inside-input" id="email" placeholder="Email">
+                        <input type="email" [(ngModel)]="email" name="email" class="inside-input" id="email" placeholder="Email" required>
                     </div>
                     <div class="single-input">
                         <p>Password</p>
-                        <input type="password" class="inside-input" id="password" placeholder="Password">
+                        <input type="password" [(ngModel)]="password" name="password" class="inside-input" id="password" placeholder="Password" required>
                     </div>
-                    <button class="submit">Sign In</button>
+                    <button class="submit" type="submit">Sign In</button>
                 </div>
             </form>
         </div>

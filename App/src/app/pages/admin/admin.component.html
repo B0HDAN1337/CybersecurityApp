@@ -16,26 +16,41 @@
                     <th>Actions</th>
                 </tr>
 
-                <tr class="tr-user">
-                    <th>bohdan</th>
-                    <th>machuliak</th>
-                    <th>bohdan@kuropatka.pl</th>
-                    <th>zabuv</th>
-                    <th>nemaye</th>
-                    <th>kaneshno yes</th>
-                     <th>kaneshno yes</th>
-                     <th>kaneshno yes</th>
-                    <th>
-                        <div class="actions-buttons">
-                            <button class="edit-b">Edit</button>
-                            <button class="delete-b">Delete</button>
-                        </div>
-                    </th>
-                </tr>
-            </table>
-        </div>
+                <tr class="tr-user" *ngFor="let user of users">
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.lastname }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.password }}</td>
+      
+                    <td>
+                        <select [(ngModel)]="user.status" (change)="onStatusChange(user, $event)">
+                        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+                        </select>
+                    </td>
 
-        <a href="/App/html/add-user.html">
-            <button class="submit">Add user</button>
-        </a>
+                    <td>
+                        <select [(ngModel)]="user.passPolicy" (change)="onPassPolicyChange(user, $event)">
+                        <option *ngFor="let p of passPolicies" [ngValue]="p">{{ p }}</option>
+                        </select>
+                    </td>
+
+                    <td>
+                        <select [(ngModel)]="user.role" (change)="onRoleChange(user, $event)">
+                        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+                        </select>
+                    </td>
+
+                    <td>{{ user.passExpiresAt | date:'short' }}</td>
+
+                    <td>
+                        <div class="actions-buttons">
+                        <button class="edit-b">Edit</button>
+                        <button class="delete-b" (click)="deleteUser(user.id)">Delete</button>
+                        </div>
+                    </td>
+                    </tr>
+                </table>
+                </div>
+
+            <button type="button" class="submit">Add user</button>
     </section>

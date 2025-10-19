@@ -2,8 +2,15 @@
 <body>
 
     <header>
-        <div class="header-buttons">
-            <button (click)="goToLogin()">Sign In</button>
-            <button (click)="goToRegister()">Sign Up</button>
+        <div class="header-buttons" *ngIf="!isLoggedIn">
+            <button type="button" (click)="goToLogin()">Sign In</button>
+            <button type="button" (click)="goToRegister()">Sign Up</button>
+        </div>
+
+        <div class="header-buttons" *ngIf="isLoggedIn">
+            <button type="button">Account</button>
+            <button type="button" (click)="signOut()">Sign Out</button>
         </div>
     </header>
+
+        

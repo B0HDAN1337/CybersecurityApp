@@ -5,33 +5,31 @@
                 <p>SIGN UP</p>
             </div>
 
-            <form action="">
+            <form action="" (ngSubmit)="register()">
 
                 <div class="form-structure">
 
                     <div class="single-input">
                         <p>First Name</p>
-                        <input type="text" class="inside-input" id="first_name" placeholder="First Name">
+                        <input type="text" [(ngModel)]="firstname" name="firstname" class="inside-input" id="first_name" placeholder="First Name">
                     </div>
 
                     <div class="single-input">
                         <p>Last Name</p>
-                        <input type="text" class="inside-input" id="last_name" placeholder="Last Name">
+                        <input type="text" [(ngModel)]="lastname" name="lastname" class="inside-input" id="last_name" placeholder="Last Name">
                     </div>
 
                     <div class="single-input">
                         <p>Email</p>
-                        <input type="email" class="inside-input" id="email" placeholder="Email">
+                        <input type="email" [(ngModel)]="email" name="email" class="inside-input" id="email" placeholder="Email">
                     </div>
 
                     <div class="single-input">
                         <p>Password</p>
-                        <input type="password" class="inside-input" id="password" placeholder="Password">
+                        <input type="password" [(ngModel)]="password" name="password" class="inside-input" id="password" placeholder="Password">
                     </div>
 
-                    <button class="submit">
-                        Sign Up
-                    </button>
+                    <button class="submit" type="submit">Sign Up</button>
 
                 </div>
 
