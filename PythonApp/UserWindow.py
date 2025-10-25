@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog, Toplevel
 from database import get_connection
-from utils import hash_password, check_password
+from utils import hash_password, check_password, log_event
 import re
 
 class UserWindow:
@@ -81,6 +81,7 @@ class UserWindow:
         conn.commit()
         conn.close()
         messagebox.showinfo("Success", "Password changed successfully")
+        log_event(self.username, "PASSWORD", f"{self.username} changed password")
             
     def validate_password(self, password) -> bool:
         if len(password) < 4: 

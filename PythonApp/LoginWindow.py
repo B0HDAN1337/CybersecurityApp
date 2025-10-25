@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from database import get_connection
-from utils import check_password
+from utils import check_password, log_event
 from AdminWindow import AdminWindow
 from UserWindow import UserWindow
 
@@ -33,16 +33,20 @@ class LoginWindow:
 
         if not user:
             messagebox.showerror("Error", "Login lub Hasło niepoprawny")
+            log_event(user, "LOGIN", "Login lub Hasło niepoprawny")
             return
 
         if user["blocked"]:
             messagebox.showerror("Error", "Konto zablokowane")
+            log_event(f"{username}", "LOGIN", "Blocked")
             return
 
         if check_password(password_input, user["password_hash"]):
+            log_event(username, "LOGIN", f"{username} login to application")
             self.master.after(100, lambda: self.open_user_window(username, user))
         else:
             messagebox.showerror("Error", "Login lub Hasło niepoprawny")
+            log_event(f"{username}", "LOGIN", "Login lub Hasło niepoprawny")
 
 
     def open_user_window(self, username, user):

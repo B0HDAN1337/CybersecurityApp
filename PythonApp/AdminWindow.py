@@ -1,8 +1,9 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter import messagebox, simpledialog
 from datetime import datetime, timedelta
 from database import get_connection
-from utils import hash_password, check_password
+from utils import hash_password, check_password, log_event
 
 class AdminWindow:
     def __init__(self):
@@ -18,6 +19,7 @@ class AdminWindow:
         tk.Button(self.root, text="Edit User", command=self.edit_user).pack(fill="x")
         tk.Button(self.root, text="Set Password Policy", command=self.set_password_policy).pack(fill="x")
         tk.Button(self.root, text="Set Password Expiry", command=self.set_password_expiry).pack(fill="x")
+        tk.Button(self.root, text="Logs", command=self.logs).pack(fill="x")
         tk.Button(self.root, text="Exit", command=self.root.destroy).pack(fill="x")
 
         self.root.mainloop()
@@ -58,6 +60,7 @@ class AdminWindow:
         conn.commit()
         conn.close()
         messagebox.showinfo("Success", f"User {username} added!")
+        log_event("ADMIN", "CREATE", f"{username} Created")
 
     def view_users(self):
         conn = get_connection()
@@ -80,6 +83,7 @@ class AdminWindow:
             c.execute("UPDATE users SET blocked=? WHERE username=?", (new_state, username))
             conn.commit()
             messagebox.showinfo("Success", f"User {username} {'blocked' if new_state else 'unblocked'}")
+            log_event("ADMIN", "BLOCK", f"{username} changed to {new_state}")
         else:
             messagebox.showerror("Error", "User not found")
         conn.close()
@@ -92,6 +96,7 @@ class AdminWindow:
         conn.commit()
         conn.close()
         messagebox.showinfo("Success", f"User {username} deleted")
+        log_event("ADMIN", "DELETE", f"{username} deleted")
 
     def set_password_policy(self):
         conn = get_connection()
@@ -120,6 +125,7 @@ class AdminWindow:
         conn.commit()
         conn.close()
         messagebox.showinfo("Success", "Password policies updated")
+        log_event("ADMIN", "PASSWORD POLICY", f"{username} changed to {var.get()}")
         window.destroy()
 
 
@@ -133,6 +139,7 @@ class AdminWindow:
         conn.commit()
         conn.close()
         messagebox.showinfo("Success", "Password expiry updated")
+        log_event("ADMIN", "PASSWORD EXPIRY", f"{username} changed to {expiry}")
 
 
     def edit_user(self):
@@ -180,3 +187,34 @@ class AdminWindow:
         conn.commit()
         conn.close()
         messagebox.showinfo("Success", f"User {username} updated successfully")
+
+    def logs(self):
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT username, timestamp, action, description FROM logs")
+        user_logs = c.fetchall()
+        conn.close()
+
+        log_window = tk.Toplevel(self.root)
+        log_window.title("Activity Logs")
+        log_window.geometry("600x400")
+        columns = ("username", "timestamp", "action", "description")
+        tree = ttk.Treeview(log_window, columns=columns, show="headings")
+        tree.heading("username", text="Username")
+        tree.heading("timestamp", text="Timestamp")
+        tree.heading("action", text="Action")
+        tree.heading("description", text="Description")
+
+        tree.column("username", width=100)
+        tree.column("timestamp", width=150)
+        tree.column("action", width=120)
+        tree.column("description", width=300)
+
+        for log in user_logs:
+            tree.insert("", tk.END, values=(log["username"], log["timestamp"], log["action"], log["description"]))
+
+        tree.pack(fill=tk.BOTH, expand=True)
+
+        scrollbar = ttk.Scrollbar(log_window, orient=tk.VERTICAL, command=tree.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+

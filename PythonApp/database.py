@@ -23,6 +23,14 @@ def setup_database():
         first_login INTEGER DEFAULT 1
     )
     ''')
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        timestamp TEXT NOT NULL,
+        action TEXT NOT NULL,
+        description TEXT
+    )''')
     conn.commit()
     conn.close()
 
