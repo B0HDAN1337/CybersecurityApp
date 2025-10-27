@@ -20,6 +20,8 @@ def setup_database():
         password_expiry DATE,
         password_history TEXT,
         password_policy INTEGER DEFAULT 1,
+        attempts INTEGER DEFAULT 0,
+        block_time DATE,
         first_login INTEGER DEFAULT 1
     )
     ''')
