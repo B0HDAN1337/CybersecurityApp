@@ -3,11 +3,13 @@ import tkinter.ttk as ttk
 from tkinter import messagebox, simpledialog
 from datetime import datetime, timedelta
 from database import get_connection
-from utils import hash_password, check_password, log_event
+from utils import hash_password, check_password, log_event, check_session_expiry
 
 class AdminWindow:
-    def __init__(self):
+    def __init__(self, session, on_logout=None):
         self.root = tk.Tk()
+        self.session = session
+        self.on_logout = on_logout
         self.root.title("Admin Panel")
         self.root.geometry("400x400")
 
@@ -21,6 +23,8 @@ class AdminWindow:
         tk.Button(self.root, text="Set Password Expiry", command=self.set_password_expiry).pack(fill="x")
         tk.Button(self.root, text="Logs", command=self.logs).pack(fill="x")
         tk.Button(self.root, text="Exit", command=self.root.destroy).pack(fill="x")
+
+        self.root.after(1000, lambda: check_session_expiry(self.root))
 
         self.root.mainloop()
 

@@ -1,10 +1,8 @@
 import tkinter as tk
 from database import setup_database, setup_admin
-from LoginWindow import LoginWindow
+from utils import start_login_window
 
 if __name__ == "__main__":
     setup_database()
     setup_admin()
-    root = tk.Tk()
-    app = LoginWindow(root)
-    root.mainloop()
+    start_login_window()

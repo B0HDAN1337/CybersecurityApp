@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
 from database import get_connection
-from utils import check_password, log_event
+from utils import check_password, log_event, open_user_window, session
 from AdminWindow import AdminWindow
 from UserWindow import UserWindow
 from datetime import datetime, timedelta
+from SessionManager import SessionManager
 
 MAX_LOGIN = 3
 TIME_BLOCK = 15
@@ -63,7 +64,8 @@ class LoginWindow:
             c.execute("UPDATE users SET attempts=0, block_time=NULL WHERE username=?", (username,))
             conn.commit()
             log_event(username, "LOGIN", f"{username} login to application")
-            self.master.after(100, lambda: self.open_user_window(username, user))
+            session.start_session(username)
+            self.master.after(100, lambda: open_user_window(self, username, user))
         else:
             attempts += 1
             c.execute("UPDATE users SET attempts=? WHERE username=?", (attempts, username))
@@ -85,11 +87,4 @@ class LoginWindow:
         
         conn.close()
 
-    def open_user_window(self, username, user):
-        self.master.destroy() 
-        if username == "ADMIN":
-            AdminWindow()
-        elif user["first_login"] == 1:
-            UserWindow(username, force_password_change=True)
-        else:
-         UserWindow(username)
+    

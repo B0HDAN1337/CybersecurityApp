@@ -1,12 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog, Toplevel
 from database import get_connection
-from utils import hash_password, check_password, log_event
+from utils import hash_password, check_password, log_event, check_session_expiry
 import re
 
 class UserWindow:
-    def __init__(self, username, force_password_change=False):
+    def __init__(self, username, session, on_logout=None, force_password_change=False):
         self.username = username
+        self.session = session
+        self.on_logout = on_logout
         self.root = tk.Tk()
         self.root.title(f"User Panel - {username}")
         self.root.geometry("300x200")
@@ -16,6 +18,8 @@ class UserWindow:
 
         if force_password_change:
             self.root.after(100, lambda: self.change_password(force=True))
+
+        self.root.after(1000, lambda: check_session_expiry(self.root))
 
         self.root.mainloop()
 
