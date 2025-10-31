@@ -19,9 +19,10 @@ def setup_database():
         blocked INTEGER DEFAULT 0,
         password_expiry DATE,
         password_history TEXT,
-        password_policy INTEGER DEFAULT 1,
+        password_policy INTEGER DEFAULT 0,
         attempts INTEGER DEFAULT 0,
         block_time DATE,
+        OTP INTEGER DEFAULT 0,
         first_login INTEGER DEFAULT 1
     )
     ''')
