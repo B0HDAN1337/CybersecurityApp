@@ -1,11 +1,12 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from database import get_connection
-from utils import check_password, log_event, open_user_window, session
+from utils import check_password, log_event, open_user_window, session, generate_OTP
 from AdminWindow import AdminWindow
 from UserWindow import UserWindow
 from datetime import datetime, timedelta
 from SessionManager import SessionManager
+import random
 
 MAX_LOGIN = 3
 TIME_BLOCK = 15
@@ -63,9 +64,20 @@ class LoginWindow:
         if check_password(password_input, user["password_hash"]):
             c.execute("UPDATE users SET attempts=0, block_time=NULL WHERE username=?", (username,))
             conn.commit()
-            log_event(username, "LOGIN", f"{username} login to application")
-            session.start_session(username)
-            self.master.after(100, lambda: open_user_window(self, username, user))
+
+            secret_x = random.randint(100000, 999999)
+            a = 1
+
+            otp = generate_OTP(username, secret_x, a)
+            messagebox.showinfo("OTP", f"One-time password: {otp}")
+            user_otp = simpledialog.askstring("Verification OTP", "Enter the one-time code:")
+            if user_otp == otp:
+                log_event(username, "LOGIN", "OTP correct → full access")
+                session.start_session(username)
+                self.master.after(100, lambda: open_user_window(self, username, user))
+            else:
+                messagebox.showerror("Error", "Incorrect OTP code")
+                log_event(username, "LOGIN", "OTP incorrect - access denied")
         else:
             attempts += 1
             c.execute("UPDATE users SET attempts=? WHERE username=?", (attempts, username))
