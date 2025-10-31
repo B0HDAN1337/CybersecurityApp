@@ -65,19 +65,25 @@ class LoginWindow:
             c.execute("UPDATE users SET attempts=0, block_time=NULL WHERE username=?", (username,))
             conn.commit()
 
-            secret_x = random.randint(100000, 999999)
-            a = 1
 
-            otp = generate_OTP(username, secret_x, a)
-            messagebox.showinfo("OTP", f"One-time password: {otp}")
-            user_otp = simpledialog.askstring("Verification OTP", "Enter the one-time code:")
-            if user_otp == otp:
-                log_event(username, "LOGIN", "OTP correct → full access")
+            if user["OTP"]:
+                secret_x = random.randint(100000, 999999)
+                a = 1
+
+                otp = generate_OTP(username, secret_x, a)
+                messagebox.showinfo("OTP", f"One-time password: {otp}")
+                user_otp = simpledialog.askstring("Verification OTP", "Enter the one-time code:")
+                if user_otp == otp:
+                    log_event(username, "LOGIN", "OTP correct → full access")
+                    session.start_session(username)
+                    self.master.after(100, lambda: open_user_window(self, username, user))
+                else:
+                    messagebox.showerror("Error", "Incorrect OTP code")
+                    log_event(username, "LOGIN", "OTP incorrect - access denied")
+            else: 
+                log_event(username, "LOGIN", "Login successfully")
                 session.start_session(username)
                 self.master.after(100, lambda: open_user_window(self, username, user))
-            else:
-                messagebox.showerror("Error", "Incorrect OTP code")
-                log_event(username, "LOGIN", "OTP incorrect - access denied")
         else:
             attempts += 1
             c.execute("UPDATE users SET attempts=? WHERE username=?", (attempts, username))

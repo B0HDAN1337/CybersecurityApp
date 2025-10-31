@@ -53,14 +53,15 @@ class AdminWindow:
         username = simpledialog.askstring("Username", "Enter username:")
         fullname = simpledialog.askstring("Full Name", "Enter full name:")
         password = simpledialog.askstring("Password", "Enter password:", show="*")
+        otp = messagebox.askyesno("OTP", "Set one-time password?")
         password_hash = hash_password(password)
         expiry = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
 
         conn = get_connection()
         c = conn.cursor()
-        c.execute('''INSERT INTO users (username, fullname, password_hash, role, password_expiry, password_history)
-                     VALUES (?, ?, ?, ?, ?, ?)''',
-                  (username, fullname, password_hash, 'user', expiry, ''))
+        c.execute('''INSERT INTO users (username, fullname, password_hash, role, password_expiry, password_history, OTP)
+                     VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                  (username, fullname, password_hash, 'user', expiry, '', 1 if otp else 0))
         conn.commit()
         conn.close()
         messagebox.showinfo("Success", f"User {username} added!")
@@ -187,6 +188,9 @@ class AdminWindow:
         if days is not None:
             expiry = (datetime.now() + timedelta(days=days)).strftime("%Y-%m-%d")
             c.execute("UPDATE users SET password_expiry=? WHERE username=?", (expiry, username))
+
+        otp = messagebox.askyesno("OTP", "Set one-time password?")
+        c.execute("UPDATE users SET OTP=? WHERE username=?", (1 if otp else 0, username))
 
         conn.commit()
         conn.close()
