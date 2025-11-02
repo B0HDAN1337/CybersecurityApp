@@ -43,6 +43,7 @@ class LoginWindow:
 
         if user["blocked"]:
             messagebox.showerror("Error", "Konto zablokowane")
+            remaining = int((blocked_time - now).total_seconds())
             log_event(f"{username}", "LOGIN", "Blocked")
             return
         
@@ -90,7 +91,7 @@ class LoginWindow:
             conn.commit()
             block_time_to_set = None
         
-            messagebox.showerror("Error", "Login lub Hasło niepoprawny")
+            messagebox.showerror("Error", f"Login lub Hasło niepoprawny. Pozostało prob logowania: {MAX_LOGIN - attempts}")
             log_event(f"{username}", "LOGIN", "Login lub Hasło niepoprawny")
 
             if attempts >= MAX_LOGIN:

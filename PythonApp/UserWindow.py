@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog, Toplevel
 from database import get_connection
 from utils import hash_password, check_password, log_event, check_session_expiry
+from datetime import datetime
 import re
 
 class UserWindow:
@@ -14,12 +15,13 @@ class UserWindow:
         self.root.geometry("300x200")
 
         tk.Button(self.root, text="Change Password", command=self.change_password).pack(fill="x")
-        tk.Button(self.root, text="Exit", command=self.root.destroy).pack(fill="x")
+        tk.Button(self.root, text="Exit", command=self.logout_logging_user).pack(fill="x")
+        self.root.protocol("WM_DELETE_WINDOW", self.logout_logging_user)
 
         if force_password_change:
             self.root.after(100, lambda: self.change_password(force=True))
 
-        self.root.after(1000, lambda: check_session_expiry(self.root))
+        self.root.after(150000, lambda: check_session_expiry(self.root))
 
         self.root.mainloop()
 
@@ -97,3 +99,11 @@ class UserWindow:
         if len(re.findall(r'\d', password)) < 3:
             return False  
         return True 
+
+    def logout_logging_user(self):
+        log_event(self.username, "LOGOUT", f"{self.username} wylogowano o {datetime.now()}")
+        try:
+            self.session.end_session()
+        except Exception:
+            pass
+        self.root.destroy()

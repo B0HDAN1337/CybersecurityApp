@@ -69,3 +69,19 @@ def generate_OTP(username, secret_x, a):
     digest = hashlib.sha256(data.encode()).hexdigest()
     otp = int(digest, 16) % 1_000_000
     return f"{otp:06d}"
+
+def logout_logging_user(self):
+        log_event(self.username, "LOGOUT", f"{self.username} wylogowano o {datetime.now()}")
+        try:
+            self.session.end_session()
+        except Exception:
+            pass
+        self.root.destroy()
+
+def logout_logging_admin(self):
+        log_event("ADMIN", "LOGOUT", f" wylogowano o {datetime.now()}")
+        try:
+            self.session.end_session()
+        except Exception:
+            pass
+        self.root.destroy()

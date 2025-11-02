@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 
 class SessionManager:
-    def __init__(self, timeout_minutes=1):
+
+    def __init__(self, timeout_minutes=15):
         self.timeout = timedelta(minutes=timeout_minutes)
         self.start_time = None
         self.username = None
@@ -18,3 +19,6 @@ class SessionManager:
         if not self.start_time:
             return False
         return datetime.now() - self.start_time <self.timeout
+
+    
+    

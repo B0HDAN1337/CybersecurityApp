@@ -3,7 +3,9 @@ import tkinter.ttk as ttk
 from tkinter import messagebox, simpledialog
 from datetime import datetime, timedelta
 from database import get_connection
+from utils import log_event
 from utils import hash_password, check_password, log_event, check_session_expiry
+
 
 class AdminWindow:
     def __init__(self, session, on_logout=None):
@@ -22,9 +24,10 @@ class AdminWindow:
         tk.Button(self.root, text="Set Password Policy", command=self.set_password_policy).pack(fill="x")
         tk.Button(self.root, text="Set Password Expiry", command=self.set_password_expiry).pack(fill="x")
         tk.Button(self.root, text="Logs", command=self.logs).pack(fill="x")
-        tk.Button(self.root, text="Exit", command=self.root.destroy).pack(fill="x")
+        tk.Button(self.root, text="Exit", command=self.logout_logging_admin).pack(fill="x")
+        self.root.protocol("WM_DELETE_WINDOW", self.logout_logging_admin)
 
-        self.root.after(1000, lambda: check_session_expiry(self.root))
+        self.root.after(150000, lambda: check_session_expiry(self.root))
 
         self.root.mainloop()
 
@@ -164,13 +167,19 @@ class AdminWindow:
         fullname = simpledialog.askstring("Full Name", "Enter full name:", initialvalue=user["fullname"])
         if fullname:
             c.execute("UPDATE users SET fullname=? WHERE username=?", (fullname, username))
+            conn.commit()
+            log_event("ADMIN", "USER EDITED", f"User name now changed to {fullname, username}")
 
         role = simpledialog.askstring("Role", "Enter role (user/admin):", initialvalue=user["role"])
         if role:
             c.execute("UPDATE users SET role=? WHERE username=?", (role, username))
+            conn.commit()
+            log_event("ADMIN", "USER EDITED", f"{username} role now changed to {role}")
 
         blocked = messagebox.askyesno("Blocked", "Should the user be blocked?")
         c.execute("UPDATE users SET blocked=? WHERE username=?", (1 if blocked else 0, username))
+        conn.commit()
+        log_event("ADMIN", "USER EDITED", f"{username} status now changed to {blocked}")
 
         if messagebox.askyesno("Change Password", "Do you want to change the password?"):
             new_pw = simpledialog.askstring("New Password", "Enter new password:", show="*")
@@ -178,19 +187,27 @@ class AdminWindow:
             if new_pw and new_pw == new_pw2:
                 new_hash = hash_password(new_pw)
                 c.execute("UPDATE users SET password_hash=?, first_login=0 WHERE username=?", (new_hash, username))
+                conn.commit()
+                log_event("ADMIN", "USER EDITED", f"{username} password changed by admin")
             else:
                 messagebox.showerror("Error", "Passwords do not match")
 
         password_policy = messagebox.askyesno("Password Policy", "Enable password restrictions?")
         c.execute("UPDATE users SET password_policy=? WHERE username=?", (1 if password_policy else 0, username))
+        conn.commit()
+        log_event("ADMIN", "USER EDITED", f"{username} password policy changed by admin")
 
         days = simpledialog.askinteger("Password Expiry", "Set password expiry in days:", initialvalue=30)
         if days is not None:
             expiry = (datetime.now() + timedelta(days=days)).strftime("%Y-%m-%d")
             c.execute("UPDATE users SET password_expiry=? WHERE username=?", (expiry, username))
+            conn.commit()
+            log_event("ADMIN", "USER EDITED", f"{username} password expiry changed by admin")
 
         otp = messagebox.askyesno("OTP", "Set one-time password?")
         c.execute("UPDATE users SET OTP=? WHERE username=?", (1 if otp else 0, username))
+        conn.commit()
+        log_event("ADMIN", "USER EDITED", f"{username} one-time password policy changed by admin")
 
         conn.commit()
         conn.close()
@@ -226,3 +243,10 @@ class AdminWindow:
         scrollbar = ttk.Scrollbar(log_window, orient=tk.VERTICAL, command=tree.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
+    def logout_logging_admin(self):
+        log_event("ADMIN", "LOGOUT", f"Wylogowano o {datetime.now()}")
+        try:
+            self.session.end_session()
+        except Exception:
+            pass
+        self.root.destroy()
