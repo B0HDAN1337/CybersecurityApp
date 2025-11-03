@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 class SessionManager:
 
-    def __init__(self, timeout_minutes=15):
+    def __init__(self, timeout_minutes):
         self.timeout = timedelta(minutes=timeout_minutes)
         self.start_time = None
         self.username = None

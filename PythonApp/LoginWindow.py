@@ -41,16 +41,17 @@ class LoginWindow:
             log_event(user, "LOGIN", "Login lub Hasło niepoprawny")
             return
 
+        blocked_time = user["block_time"]
+        now = datetime.now()
+        attempts = user["attempts"] or 0
+
         if user["blocked"]:
             messagebox.showerror("Error", "Konto zablokowane")
             remaining = int((blocked_time - now).total_seconds())
             log_event(f"{username}", "LOGIN", "Blocked")
             return
         
-        blocked_time = user["block_time"]
-        now = datetime.now()
-        attempts = user["attempts"] or 0
-
+        
         if blocked_time:
             blocked_time = datetime.fromisoformat(blocked_time)
 

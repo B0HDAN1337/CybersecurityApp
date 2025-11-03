@@ -23,7 +23,7 @@ def log_event(username: str, action: str, description: str = ""):
     conn.commit()
     conn.close()
 
-session = SessionManager(timeout_minutes=1)
+session = SessionManager(timeout_minutes=15)
 
 def logout(window=None):
     session.end_session()
@@ -40,12 +40,13 @@ def start_login_window():
     app = LoginWindow(root)
     root.mainloop()
 
-def check_session_expiry(window):
+def check_session_expiry(window, username):
     if not session.check_session():
         messagebox.showinfo("Session expired", "Your session has expired. Please log in again.")
+        log_event(username,  "FORCE LOGOUT", f"{username} wylogowano o {datetime.now()}")
         logout(window)
         return
-    window.after(5000, lambda: check_session_expiry(window))
+    window.after(5000, lambda: check_session_expiry(window, username))
 
 def open_user_window(parent, username, user):
     from AdminWindow import AdminWindow
@@ -57,7 +58,7 @@ def open_user_window(parent, username, user):
         parent.destroy()
 
     if username == "ADMIN":
-        AdminWindow(session)
+        AdminWindow(session, username)
     elif user["first_login"] == 1:
         UserWindow(username, session, on_logout=lambda: logout(), force_password_change=True)
     else:

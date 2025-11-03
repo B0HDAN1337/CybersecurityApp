@@ -21,7 +21,7 @@ class UserWindow:
         if force_password_change:
             self.root.after(100, lambda: self.change_password(force=True))
 
-        self.root.after(150000, lambda: check_session_expiry(self.root))
+        self.root.after(1000, lambda: check_session_expiry(self.root, self.username))
 
         self.root.mainloop()
 

@@ -8,11 +8,12 @@ from utils import hash_password, check_password, log_event, check_session_expiry
 
 
 class AdminWindow:
-    def __init__(self, session, on_logout=None):
+    def __init__(self, session, username, on_logout=None):
         self.root = tk.Tk()
+        self.username = username
         self.session = session
         self.on_logout = on_logout
-        self.root.title("Admin Panel")
+        self.root.title(f"Admin Panel - {username}")
         self.root.geometry("400x400")
 
         tk.Button(self.root, text="Change Admin Password", command=self.change_admin_password).pack(fill="x")
@@ -27,7 +28,7 @@ class AdminWindow:
         tk.Button(self.root, text="Exit", command=self.logout_logging_admin).pack(fill="x")
         self.root.protocol("WM_DELETE_WINDOW", self.logout_logging_admin)
 
-        self.root.after(150000, lambda: check_session_expiry(self.root))
+        self.root.after(1000, lambda: check_session_expiry(self.root, self.username))
 
         self.root.mainloop()
 
