@@ -70,7 +70,7 @@ class LoginWindow:
 
             if user["OTP"]:
                 secret_x = random.randint(100000, 999999)
-                a = 1
+                a = user["id"]
 
                 otp = generate_OTP(username, secret_x, a)
                 messagebox.showinfo("OTP", f"One-time password: {otp}")

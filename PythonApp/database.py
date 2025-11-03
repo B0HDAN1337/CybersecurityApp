@@ -12,7 +12,8 @@ def setup_database():
     c = conn.cursor()
     c.execute('''
     CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY,
+        id INTEGER PRIMARY KEY,
+        username TEXT,
         fullname TEXT,
         password_hash BLOB,
         role TEXT,
