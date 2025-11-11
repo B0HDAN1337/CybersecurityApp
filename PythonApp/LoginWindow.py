@@ -7,6 +7,7 @@ from UserWindow import UserWindow
 from datetime import datetime, timedelta
 from SessionManager import SessionManager
 import random
+import CaptchaWindow
 
 MAX_LOGIN = 3
 TIME_BLOCK = 15
@@ -25,11 +26,20 @@ class LoginWindow:
         self.password_entry = tk.Entry(master, show="*")
         self.password_entry.pack()
 
+        self.captcha_btn = tk.Button(master, text="CAPTCHA", command=self.show_captcha)
+        self.captcha_btn.pack()
+
         tk.Button(master, text="Login", command=self.login).pack()
+
+        self.captcha_passed = False
 
     def login(self):
         username = self.username_entry.get()
         password_input = self.password_entry.get()
+
+        if not getattr(self, "captcha_passed", False):
+            messagebox.showwarning("CAPTCHA", "First of all CAPTCHA!")
+            return
 
         conn = get_connection()
         c = conn.cursor()
@@ -106,5 +116,11 @@ class LoginWindow:
                 messagebox.showerror("BLOCK", f"Account is blocked for {TIME_BLOCK} minut")
         
         conn.close()
+
+    def show_captcha(self):
+        CaptchaWindow.CaptchaWindow(self.master, self.captcha_solved_callback)
+
+    def captcha_solved_callback(self):
+        self.captcha_passed = True
 
     
