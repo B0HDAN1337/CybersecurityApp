@@ -1,0 +1,26 @@
+
+        <html>
+          <head>
+            <script src="https://www.google.com/recaptcha/api.js"></script>
+          </head>
+          <body>
+            <form id="recaptcha-form">
+              <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+              <br/>
+              <input type="submit" value="Submit"/>
+            </form>
+            <script>
+              document.getElementById('recaptcha-form').onsubmit = function(e) {
+                e.preventDefault();
+                var response = grecaptcha.getResponse();
+                if(response.length == 0) {
+                    alert("Please complete the CAPTCHA!");
+                } else {
+                    alert("CAPTCHA completed! Token: " + response);
+                    window.pywebview.api.send_token(response);
+                }
+              }
+            </script>
+          </body>
+        </html>
+        

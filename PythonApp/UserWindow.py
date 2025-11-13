@@ -4,12 +4,14 @@ from database import get_connection
 from utils import hash_password, check_password, log_event, check_session_expiry
 from datetime import datetime
 import re
+from reCaptchaWindow import ReCaptchaWindow
 
 class UserWindow:
-    def __init__(self, username, session, on_logout=None, force_password_change=False):
+    def __init__(self, username, session, on_logout=None, force_password_change=False, captcha_passed = False):
         self.username = username
         self.session = session
         self.on_logout = on_logout
+        self.captcha_passed = captcha_passed
         self.root = tk.Tk()
         self.root.title(f"User Panel - {username}")
         self.root.geometry("300x200")
@@ -80,6 +82,17 @@ class UserWindow:
         history.append(new_pw)
         history = ','.join(history[-5:])
 
+        def captcha_result(success):
+            if success:               
+                self.root.after(0, lambda: self.save_password(new_hash, history))
+            else:
+                messagebox.showerror("Error", "You must pass the CAPTCHA to save password!")
+
+        ReCaptchaWindow(captcha_result)
+
+    def save_password(self, new_hash, history):
+        conn = get_connection()
+        c = conn.cursor()
         c.execute(
             "UPDATE users SET password_hash=?, password_history=?, first_login=0 WHERE username=?",
             (new_hash, history, self.username)
@@ -88,6 +101,7 @@ class UserWindow:
         conn.close()
         messagebox.showinfo("Success", "Password changed successfully")
         log_event(self.username, "PASSWORD", f"{self.username} changed password")
+
             
     def validate_password(self, password) -> bool:
         if len(password) < 4: 
