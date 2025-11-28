@@ -1,10 +1,12 @@
 import tkinter as tk
-from tkinter import messagebox, simpledialog, Toplevel
+from tkinter import messagebox, simpledialog, filedialog, Toplevel
 from database import get_connection
 from utils import hash_password, check_password, log_event, check_session_expiry
 from datetime import datetime
 import re
 from reCaptchaWindow import ReCaptchaWindow
+from LicenseManager import LicenseManager
+import subprocess
 
 class UserWindow:
     def __init__(self, username, session, on_logout=None, force_password_change=False, captcha_passed = False):
@@ -12,11 +14,13 @@ class UserWindow:
         self.session = session
         self.on_logout = on_logout
         self.captcha_passed = captcha_passed
+        self.license = LicenseManager()
         self.root = tk.Tk()
         self.root.title(f"User Panel - {username}")
         self.root.geometry("300x200")
 
         tk.Button(self.root, text="Change Password", command=self.change_password).pack(fill="x")
+        tk.Button(self.root, text="Open File", command=self.open_file).pack(fill="x")
         tk.Button(self.root, text="Exit", command=self.logout_logging_user).pack(fill="x")
         self.root.protocol("WM_DELETE_WINDOW", self.logout_logging_user)
 
@@ -121,3 +125,21 @@ class UserWindow:
         except Exception:
             pass
         self.root.destroy()
+   
+    def ask_for_key(self):
+        return simpledialog.askstring( "Key", "Enter the key to unlock the function (from 19:00):", show="*")
+
+    def open_file(self):
+        if self.license.is_blocked():
+            key = self.ask_for_key()
+            if key is None:
+                return
+            if not self.license.check_key(key):
+                messagebox.showerror("Error", "Incorrect unlock key.")
+                return
+
+        file_path = "CB_Zad_4.pdf" # select file path
+        try:
+            subprocess.call(["open", file_path])
+        except Exception as e:
+            messagebox.showerror("Error", f"The file cannot be opened:\n{e}")
