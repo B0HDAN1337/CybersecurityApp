@@ -21,6 +21,7 @@ class UserWindow:
 
         tk.Button(self.root, text="Change Password", command=self.change_password).pack(fill="x")
         tk.Button(self.root, text="Open File", command=self.open_file).pack(fill="x")
+        tk.Button(self.root, text="Rate the application", command=self.open_qr).pack(fill="x")
         tk.Button(self.root, text="Exit", command=self.logout_logging_user).pack(fill="x")
         self.root.protocol("WM_DELETE_WINDOW", self.logout_logging_user)
 
@@ -138,8 +139,16 @@ class UserWindow:
                 messagebox.showerror("Error", "Incorrect unlock key.")
                 return
 
-        file_path = "CB_Zad_4.pdf" # select file path
+        file_path = "file_alert.docx" # select file path
         try:
             subprocess.call(["open", file_path])
         except Exception as e:
             messagebox.showerror("Error", f"The file cannot be opened:\n{e}")
+
+    def open_qr(self):
+
+        file_path = "QR.png"
+        try: 
+            subprocess.call(["open", file_path])
+        except Exception as e:
+            messagebox.showerror("Error", f"The QR code cannot be opened:\n{e}")
